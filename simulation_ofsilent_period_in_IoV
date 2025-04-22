@@ -1,0 +1,35 @@
+import random
+
+# Generate synthetic but realistic movement (smooth path)
+def generate_trace(num_points=10, start=(50, 50)):
+    trace = []
+    x, y = start
+    for i in range(num_points):
+        x += random.uniform(-2, 2)
+        y += random.uniform(-2, 2)
+        trace.append((i, x, y))
+    return trace
+
+# Same linkability function
+def is_linkable(before, after, threshold=5):
+    dist = ((before[1] - after[1])**2 + (before[2] - after[2])**2)**0.5
+    return dist < threshold
+
+# Silent period adds a jump in position
+def simulate_silent_period(link_attempts=10, silent_period=True):
+    links = 0
+    for _ in range(link_attempts):
+        trace = generate_trace()
+        old_id = trace[4]
+        new_id = trace[6]
+
+        if silent_period:
+            new_id = (new_id[0], new_id[1] + random.uniform(8, 12), new_id[2] + random.uniform(8, 12))
+
+        if is_linkable(old_id, new_id):
+            links += 1
+    return links / link_attempts
+
+# Show the linkability results
+print("Linkability WITHOUT silent period:", simulate_silent_period(silent_period=False))
+print("Linkability WITH silent period   :", simulate_silent_period(silent_period=True))
